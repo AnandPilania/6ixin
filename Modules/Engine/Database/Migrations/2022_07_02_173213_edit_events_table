@@ -1,0 +1,59 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+      $tableNames = config('db.table_names');
+      $columnNames = config('db.column_names');
+
+      if (empty($tableNames)) {
+        throw new \Exception('Error: config/engine.php not loaded. Run [php artisan config:clear] and try again.');
+      }
+      if (empty($columnNames)) {
+        throw new \Exception('Error: config/engine.php not loaded. Run [php artisan config:clear] and try again.');
+      }
+      if(Schema::hasTable($tableNames['events'])) {
+      Schema::table($tableNames['events'], function (Blueprint $table) {
+          $table->foreignId('location_id')->nullable()->constrained(config('db.table_names.locations'))->onDelete('cascade');
+          // $table->foreignId('organization_id')->nullable()->constrained(config('db.table_names.organizations'))->onDelete('cascade');
+          $table->string(config('db.column_names.foreign_user'))->nullable();
+          $table->foreign(config('db.column_names.foreign_user'))
+                ->references(config('db.column_names.local_user'))
+                ->on(config('db.table_names.users'))
+                ->onDelete('cascade');
+          $table->string('tenant_id');
+          $table->foreign('tenant_id')->references('id')->on('tenants')->onUpdate('cascade')->onDelete('cascade');
+          $table->string('author_id')->nullable();
+          $table->string('author_type')->nullable();
+
+        });
+      }
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+      $tableNames = config('db.table_names');
+      $columnNames = config('db.column_names');
+
+      if (empty($tableNames)) {
+          throw new \Exception('Error: config/engine.php not loaded. Run [php artisan config:clear] and try again.');
+      }
+
+      Schema::dropIfExists($tableNames['events']);
+    }
+};

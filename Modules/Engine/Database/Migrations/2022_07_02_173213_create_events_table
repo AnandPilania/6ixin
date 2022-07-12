@@ -1,0 +1,71 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+      $tableNames = config('db.table_names');
+      $columnNames = config('db.column_names');
+
+      if (empty($tableNames)) {
+        throw new \Exception('Error: config/engine.php not loaded. Run [php artisan config:clear] and try again.');
+      }
+      if (empty($columnNames)) {
+        throw new \Exception('Error: config/engine.php not loaded. Run [php artisan config:clear] and try again.');
+      }
+      if(!Schema::hasTable($tableNames['events'])) {
+      Schema::create($tableNames['events'], function (Blueprint $table) {
+            $table->id();
+            $table->json('title');
+            $table->string('slug');
+            $table->json('slogan')->nullable();
+            $table->json('description')->nullable();
+            $table->string('address')->nullable();
+            $table->string('url')->nullable();
+            $table->string('note')->nullable();
+            $table->boolean('is_featured')->default(0)->nullable();
+            $table->boolean('is_active')->default(0)->nullable();
+            $table->integer('frequence_id')->nullable();
+            $table->integer('value')->nullable();
+            $table->integer('duration')->nullable();
+            $table->date('starting_date')->nullable();
+            $table->time('starting_time')->nullable();
+            $table->time('ending_time')->nullable();
+            $table->boolean('is_private')->default(0)->nullable();
+            $table->boolean('is_hidden')->default(0)->nullable();
+            $table->integer('type_id')->default(0);
+            $table->schemalessAttributes('properties')->nullable();
+            $table->schemalessAttributes('data')->nullable();
+            $table->string('global')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+        });
+      }
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+      $tableNames = config('db.table_names');
+      $columnNames = config('db.column_names');
+
+      if (empty($tableNames)) {
+          throw new \Exception('Error: config/engine.php not loaded. Run [php artisan config:clear] and try again.');
+      }
+
+      Schema::dropIfExists($tableNames['events']);
+    }
+};

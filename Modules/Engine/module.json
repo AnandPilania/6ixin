@@ -1,0 +1,13 @@
+{
+    "name": "Engine",
+    "alias": "engine",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Engine\\Providers\\EngineServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
